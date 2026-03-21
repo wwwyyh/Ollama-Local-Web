@@ -1,0 +1,346 @@
+/* ==================== 响应式布局样式 ==================== */
+/* TASK-304: 实现桌面端、平板端、移动端响应式适配 */
+
+/*
+ * 断点说明:
+ * - 桌面端 (>= 1024px): 默认样式
+ * - 平板端 (768px - 1023px): 中等屏幕适配
+ * - 移动端 (< 768px): 小屏幕适配
+ * - 小屏移动端 (< 480px): 超小屏幕适配
+ */
+
+/* ==================== 平板端适配 (768px - 1023px) ==================== */
+@media screen and (max-width: 1023px) {
+  /* Header 平板适配 */
+  .header .header-container {
+    padding: 0 var(--spacing-lg);
+  }
+
+  .header .title {
+    font-size: var(--font-size-md);
+  }
+
+  /* ChatArea 平板适配 */
+  .chat-area .chat-container {
+    padding: var(--spacing-lg);
+  }
+
+  /* MessageItem 平板适配 */
+  .message-item .message-content {
+    max-width: 85%;
+  }
+
+  /* ModelSelector 平板适配 */
+  .model-selector {
+    min-width: 180px;
+  }
+}
+
+/* ==================== 移动端适配 (< 768px) ==================== */
+@media screen and (max-width: 767px) {
+  /* ===== Header 移动端 ===== */
+  .header .header-container {
+    padding: 0 var(--spacing-md);
+  }
+
+  .header .title {
+    display: none;
+  }
+
+  .header .logo {
+    width: 32px;
+    height: 32px;
+    font-size: var(--font-size-md);
+  }
+
+  .header .theme-toggle {
+    width: 32px;
+    height: 32px;
+  }
+
+  .header .theme-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* ===== ChatArea 移动端 ===== */
+  .chat-area .chat-container {
+    padding: var(--spacing-md);
+  }
+
+  .chat-area .welcome-logo {
+    width: 48px;
+    height: 48px;
+    font-size: var(--font-size-2xl);
+  }
+
+  .chat-area .welcome-message h2 {
+    font-size: var(--font-size-xl);
+  }
+
+  .chat-area .scroll-to-bottom {
+    width: 36px;
+    height: 36px;
+    bottom: var(--spacing-md);
+    right: var(--spacing-md);
+  }
+
+  /* ===== MessageItem 移动端 ===== */
+  .message-item .message-content {
+    max-width: 90%;
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .message-item .markdown-body h1 {
+    font-size: var(--font-size-xl);
+  }
+
+  .message-item .markdown-body h2 {
+    font-size: var(--font-size-lg);
+  }
+
+  .message-item .markdown-body ul,
+  .message-item .markdown-body ol {
+    margin-left: var(--spacing-md);
+  }
+
+  .message-item .markdown-body .code-block-wrapper {
+    margin-left: calc(-1 * var(--spacing-sm));
+    margin-right: calc(-1 * var(--spacing-sm));
+    border-radius: var(--border-radius-sm);
+  }
+
+  /* ===== InputArea 移动端 ===== */
+  .input-area .input-container {
+    padding: 0 var(--spacing-md);
+  }
+
+  .input-area .input-wrapper {
+    padding: var(--spacing-sm);
+  }
+
+  .input-area .send-button {
+    width: 32px;
+    height: 32px;
+  }
+
+  .input-area .icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* ===== ModelSelector 移动端 ===== */
+  .model-selector {
+    min-width: 140px;
+  }
+
+  .model-selector .select {
+    padding: var(--spacing-sm) var(--spacing-md);
+    padding-right: var(--spacing-2xl);
+    font-size: var(--font-size-xs);
+  }
+
+  .model-selector .icon {
+    right: var(--spacing-sm);
+  }
+
+  /* ===== ToastNotification 移动端 ===== */
+  .notification {
+    min-width: auto;
+    width: calc(100% - var(--spacing-lg) * 2);
+    top: calc(var(--header-height) + var(--spacing-sm));
+  }
+}
+
+/* ==================== 小屏移动端适配 (< 480px) ==================== */
+@media screen and (max-width: 479px) {
+  /* ===== Header 小屏 ===== */
+  .header .header-right {
+    gap: var(--spacing-sm);
+  }
+
+  .header .logo {
+    width: 28px;
+    height: 28px;
+    font-size: var(--font-size-sm);
+  }
+
+  .header .theme-toggle {
+    width: 28px;
+    height: 28px;
+  }
+
+  /* ===== ModelSelector 小屏 ===== */
+  .model-selector {
+    min-width: 100px;
+  }
+
+  .model-selector .select {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    padding-right: var(--spacing-xl);
+    font-size: var(--font-size-xs);
+  }
+
+  /* ===== ChatArea 小屏 ===== */
+  .chat-area .chat-container {
+    padding: var(--spacing-sm);
+  }
+
+  .chat-area .welcome-logo {
+    width: 40px;
+    height: 40px;
+    font-size: var(--font-size-xl);
+  }
+
+  .chat-area .welcome-message h2 {
+    font-size: var(--font-size-lg);
+  }
+
+  .chat-area .welcome-message p {
+    font-size: var(--font-size-sm);
+  }
+
+  /* ===== MessageItem 小屏 ===== */
+  .message-item .message-content {
+    max-width: 95%;
+  }
+
+  .message-item .markdown-body .code-block-wrapper {
+    margin-left: calc(-1 * var(--spacing-xs));
+    margin-right: calc(-1 * var(--spacing-xs));
+  }
+
+  .message-item .markdown-body .code-block-header {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .message-item .markdown-body .copy-button {
+    padding: 2px 8px;
+    font-size: 0.7rem;
+  }
+
+  /* ===== InputArea 小屏 ===== */
+  .input-area {
+    padding: var(--spacing-sm) 0;
+  }
+
+  .input-area .input-container {
+    padding: 0 var(--spacing-sm);
+  }
+
+  .input-area .input-textarea {
+    font-size: var(--font-size-sm);
+  }
+
+  .input-area .input-hint {
+    font-size: 0.65rem;
+  }
+
+  /* ===== ToastNotification 小屏 ===== */
+  .notification {
+    padding: var(--spacing-sm) var(--spacing-md);
+    width: calc(100% - var(--spacing-md) * 2);
+  }
+
+  .notification-message {
+    font-size: var(--font-size-xs);
+  }
+}
+
+/* ==================== 横屏模式优化 ==================== */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+  .chat-area .welcome-message {
+    margin-top: 5vh;
+  }
+
+  .chat-area .welcome-logo {
+    width: 36px;
+    height: 36px;
+  }
+
+  .chat-area .welcome-message h2 {
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .chat-area .welcome-message p {
+    font-size: var(--font-size-sm);
+  }
+
+  .input-area {
+    padding: var(--spacing-sm) 0;
+  }
+}
+
+/* ==================== 高分辨率屏幕优化 (> 1440px) ==================== */
+@media screen and (min-width: 1440px) {
+  :root {
+    --message-max-width: 900px;
+    --input-max-width: 900px;
+  }
+}
+
+/* ==================== 触摸设备优化 ==================== */
+@media (hover: none) and (pointer: coarse) {
+  .send-button,
+  .theme-toggle,
+  .scroll-to-bottom {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .markdown-body .copy-button {
+    min-width: 44px;
+    min-height: 28px;
+    padding: 6px 12px;
+  }
+}
+
+/* ==================== 打印样式 ==================== */
+@media print {
+  .header,
+  .input-area,
+  .scroll-to-bottom,
+  .theme-toggle,
+  .notification {
+    display: none !important;
+  }
+
+  .chat-area {
+    height: auto;
+    overflow: visible;
+  }
+
+  .chat-container {
+    max-width: 100%;
+  }
+
+  .message-item {
+    break-inside: avoid;
+  }
+
+  .code-block-wrapper {
+    break-inside: avoid;
+  }
+}
+
+/* ==================== 减少动画偏好 ==================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .typing-cursor {
+    animation: none;
+    opacity: 1;
+  }
+
+  .typing-indicator span {
+    animation: none;
+    opacity: 0.7;
+  }
+}
