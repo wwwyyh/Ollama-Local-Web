@@ -91,7 +91,7 @@ export function useOllama() {
     state.messages.push(userMessage);
     state.inputText = '';
 
-    // 准备流式请求 - 只发送已有的消息历史，不包括空 AI 消息
+    // 准备流式请求
     const chatRequest: ChatRequest = {
       model: state.currentModel.name,
       messages: state.messages.map(m => ({
@@ -111,34 +111,39 @@ export function useOllama() {
     state.messages.push(aiMessage);
 
     try {
-      // 流式接收响应（默认 120 秒超时）
+      // 流式接收响应 - 分别收集 thinking 和 content
+      let thinkingContent = '';
+      let answerContent = '';
+
       for await (const response of ollamaService.chatStream(
         chatRequest,
         state.abortController.signal,
-        30000 // 30 秒超时
+        30000
       )) {
-        // 处理 content 或 thinking 字段（某些模型使用 thinking）
-        const content = response.message.content || '';
-        const thinking = (response.message as any).thinking || '';
-        const textToAdd = content || thinking;
-        state.currentResponse += textToAdd;
-        // 通过数组引用直接修改属性，保持对象引用不变
+        const chunk = response.message;
+        if (chunk.thinking) {
+          thinkingContent += chunk.thinking;
+        } else if (chunk.content) {
+          answerContent += chunk.content;
+        }
+        state.currentResponse = answerContent;
+
         const lastMessage = state.messages[state.messages.length - 1];
         if (lastMessage) {
-          lastMessage.content = state.currentResponse;
+          lastMessage.content = answerContent;
+          if (thinkingContent) {
+            lastMessage.thinking = thinkingContent;
+          }
         }
       }
     } catch (error) {
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
-          // 用户中止，不显示错误
           aiMessage.content = state.currentResponse || '[Generation stopped by user]';
         } else if (error.message.includes('timeout') || error.message.includes('Timeout')) {
-          // 超时错误 - 重置界面
           handleTimeout();
           return;
         } else {
-          // 其他错误
           aiMessage.content = state.currentResponse || `Error: ${error.message}`;
           showError(`Connection error: ${error.message}`, 'error');
         }

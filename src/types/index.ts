@@ -23,12 +23,14 @@ export interface Message {
   id: string;
   role: MessageRole;
   content: string;
+  thinking?: string;
   timestamp: number;
 }
 
 export interface ChatMessage {
   role: string;
   content: string;
+  thinking?: string;
 }
 
 // ==================== API 请求 ====================
@@ -37,6 +39,7 @@ export interface ChatRequest {
   messages: ChatMessage[];
   stream: true;
   options?: ChatOptions;
+  think?: boolean;
 }
 
 export interface ChatOptions {

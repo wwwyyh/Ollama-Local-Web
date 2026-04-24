@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import hljs from 'highlight.js/lib/core';
@@ -53,6 +53,26 @@ interface Props {
 }
 
 const props = defineProps<Props>();
+
+// 思考区域折叠状态 - 每条消息独立管理
+const isThinkingExpanded = ref(false);
+
+// 流式生成时：有 thinking 但尚无 content → 自动展开；content 开始出现 → 自动折叠
+watch(
+  () => [props.message.thinking, props.message.content, props.isTyping],
+  ([thinking, content, typing]) => {
+    if (typing && thinking && !content) {
+      isThinkingExpanded.value = true;
+    } else if (typing && content) {
+      isThinkingExpanded.value = false;
+    }
+  },
+  { immediate: true }
+);
+
+function toggleThinking() {
+  isThinkingExpanded.value = !isThinkingExpanded.value;
+}
 
 // 自定义渲染器 - 为代码块添加包装器
 const renderer = new marked.Renderer();
@@ -110,21 +130,29 @@ marked.setOptions({
   gfm: true,
 });
 
-const renderedContent = computed(() => {
-  if (props.message.role !== 'assistant') {
-    return props.message.content;
-  }
-
-  // 使用 DOMPurify 清理 HTML
-  const rawHtml = marked(props.message.content) as string;
+function renderMarkdown(content: string): string {
+  const rawHtml = marked(content) as string;
   return DOMPurify.sanitize(rawHtml, {
     ALLOWED_TAGS: ['div', 'span', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'a', 'strong', 'em', 'code', 'pre', 'blockquote', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'hr', 'br', 'button'],
     ALLOWED_ATTR: ['class', 'href', 'target', 'data-code'],
     ALLOW_DATA_ATTR: true,
   });
+}
+
+const renderedContent = computed(() => {
+  if (props.message.role !== 'assistant') {
+    return props.message.content;
+  }
+  return renderMarkdown(props.message.content);
+});
+
+const renderedThinking = computed(() => {
+  if (!props.message.thinking) return '';
+  return renderMarkdown(props.message.thinking);
 });
 
 const isUser = computed(() => props.message.role === 'user');
+const hasThinking = computed(() => Boolean(props.message.thinking));
 
 // 复制代码
 async function copyCode(encodedCode: string, button: HTMLButtonElement) {
@@ -166,13 +194,30 @@ function handleClick(event: Event) {
         {{ message.content }}
       </div>
 
-      <!-- AI 消息 (Markdown) -->
-      <div
-        v-else
-        class="ai-message markdown-body"
-        v-html="renderedContent"
-        @click="handleClick"
-      />
+      <!-- AI 消息 -->
+      <template v-else>
+        <!-- 思考过程区域 -->
+        <div v-if="hasThinking" class="thinking-section">
+          <button class="thinking-toggle" @click="toggleThinking">
+            <span :class="['thinking-arrow', { 'thinking-arrow--expanded': isThinkingExpanded }]">&#9654;</span>
+            <span class="thinking-label">Thinking process...</span>
+          </button>
+          <div
+            v-if="isThinkingExpanded"
+            class="thinking-content markdown-body"
+            v-html="renderedThinking"
+            @click="handleClick"
+          />
+        </div>
+
+        <!-- 回答内容 -->
+        <div
+          v-if="message.content"
+          class="ai-message markdown-body"
+          v-html="renderedContent"
+          @click="handleClick"
+        />
+      </template>
 
       <!-- 打字光标 -->
       <span v-if="isTyping && !isUser" class="typing-cursor"></span>
@@ -475,6 +520,71 @@ function handleClick(event: Event) {
   border: none;
   border-top: 1px solid var(--border-color);
   margin: var(--spacing-xl) 0;
+}
+
+/* ===== 思考过程区域 ===== */
+.thinking-section {
+  margin-bottom: var(--spacing-md);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+}
+
+.thinking-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--bg-hover);
+  border: none;
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-style: italic;
+  transition: background-color var(--transition-fast);
+}
+
+.thinking-toggle:hover {
+  background-color: var(--border-color);
+}
+
+.thinking-arrow {
+  display: inline-block;
+  font-size: 0.6em;
+  transition: transform var(--transition-fast);
+  font-style: normal;
+}
+
+.thinking-arrow--expanded {
+  transform: rotate(90deg);
+}
+
+.thinking-label {
+  font-style: italic;
+}
+
+.thinking-content {
+  padding: var(--spacing-md);
+  background-color: rgba(0, 0, 0, 0.1);
+  border-top: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.thinking-content :deep(p) {
+  margin-bottom: var(--spacing-sm);
+}
+
+.thinking-content :deep(p:first-child) {
+  margin-top: 0;
+}
+
+.thinking-content :deep(p:last-child) {
+  margin-bottom: 0;
 }
 
 /* 打字光标 */

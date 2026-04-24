@@ -71,7 +71,7 @@ class OllamaService {
       });
 
       if (!response.ok) {
-        throw new Error(`Chat request failed: ${response.statusText}`);
+        throw new Error(`Chat request failed: ${response.status} ${response.statusText}`);
       }
 
       const reader = response.body?.getReader();
