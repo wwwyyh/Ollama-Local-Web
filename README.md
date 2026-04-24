@@ -82,4 +82,4 @@ npm run preview
 
 ## 许可证
 
-MIT
+[MIT](./LICENSE)
