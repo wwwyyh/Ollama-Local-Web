@@ -5,7 +5,7 @@
 
 ## 功能特性
 
-- **基本对话** - 支持 Enter 发送、Shift+Enter 换行的多行文本输入
+- **基本对话** - 支持 Enter 发送、Shift+Enter 换行的多行文本输入、支持thinking显示
 - **多模型切换** - 支持切换 Ollama 中已加载的不同模型，切换时保留对话历史
 - **流式输出** - 使用 SSE (Server-Sent Events) 实现逐字显示，支持中断生成
 - **Markdown 渲染** - 支持 Markdown 格式渲染，包括代码块
@@ -36,13 +36,12 @@
 ### 1. 启动 Ollama
 
 ```bash
-OLLAMA_ORIGINS="*" ollama serve
+ollama serve
 ```
 
 ### 2. 安装依赖
 
 ```bash
-cd front
 npm install
 ```
 
@@ -68,7 +67,7 @@ npm run preview
 | 获取模型列表 | `/api/tags` | GET |
 | 发送对话（流式） | `/api/chat` | POST |
 
-开发环境通过 Vite 代理转发请求到 Ollama，无需额外配置 CORS。
+通过 Vite 代理转发请求到 Ollama，无需额外配置 CORS。
 
 
 ## 浏览器兼容性
